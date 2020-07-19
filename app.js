@@ -56,7 +56,20 @@ function customHttp() {
 // Init http module
 const http = customHttp();
 
+const newsService = (function () {
+  
+
+  return {
+    topHeadlines(country = 'ua', cb) {
+      http.get(`${apiUrl}/top-headlines?country=${country}&apiKey=${apiKey}`, cb);
+    },
+    everything(query, cb) {
+      http.get(`${apiUrl}/everything?q=${query}&apiKey=${apiKey}`, cb)
+    }
+  }
+})();
+
 //  init selects
-document.addEventListener('DOMContentLoaded', function() {
+document.addEventListener('DOMContentLoaded', function () {
   M.AutoInit();
 });
