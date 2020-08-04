@@ -61,8 +61,8 @@ const newsService = (function () {
   const apiUrl = '';
 
   return {
-    topHeadlines(country = 'ru', cb) {
-      http.get(`${apiUrl}/top-headlines?country=${country}&category=technology&apiKey=${apiKey}`, cb);
+    topHeadlines(country = 'ru', category = 'technology', cb) {
+      http.get(`${apiUrl}/top-headlines?country=${country}&category=${category}&apiKey=${apiKey}`, cb);
     },
     everything(query, cb) {
       http.get(`${apiUrl}/everything?q=${query}&apiKey=${apiKey}`, cb)
@@ -73,6 +73,7 @@ const newsService = (function () {
 // Elements
 const form = document.forms['newsControls'];
 const countrySelect = form.elements['country'];
+const categorySelect = form.elements['category']
 const searchInput = form.elements['search'];
 
 form.addEventListener('submit', e => {
@@ -91,10 +92,11 @@ function loadNews() {
   showLoader();
 
   const country = countrySelect.value;
+  const category = categorySelect.value;
   const searchText = searchInput.value;
 
   if (!searchText) {
-    newsService.topHeadlines(country, onGetResponse)
+    newsService.topHeadlines(country, category, onGetResponse)
   } else {
     newsService.everything(searchText, onGetResponse)
   }
@@ -109,10 +111,10 @@ function onGetResponse(err, res) {
     return;
   }
 
-  // if (!res.articles.lenght) {
-  //   // show empty message
-  //   return;
-  // }
+  if (!res.articles.length) {
+    showAlert('Nothing found');
+    return;
+  }
 
   renderNews(res.articles)
 }
@@ -144,6 +146,9 @@ function clrearContainer(container) {
 
 // news item template function
 function newsTemplate({ urlToImage, title, url, description }) {
+  if (urlToImage === '') {
+    urlToImage = 'https://ok-education.eu/wp-content/uploads/2018/08/news.jpg'
+  }
   return `
   <div class="col s12">
     <div class="card">
@@ -183,4 +188,8 @@ function removePreloader() {
   if (loader) {
     loader.remove()
   }
+}
+
+function setDefaultImage() {
+
 }
